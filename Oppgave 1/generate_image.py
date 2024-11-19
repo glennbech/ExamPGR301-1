@@ -32,7 +32,6 @@ def lambda_handler(event, context):
                 "seed": seed,
             },
         }
-        
         # Kall Bedrock-modellen
         response = bedrock_client.invoke_model(
             modelId="amazon.titan-image-generator-v1",
