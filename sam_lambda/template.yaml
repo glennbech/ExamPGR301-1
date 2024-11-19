@@ -31,7 +31,7 @@ Resources:
             Method: post
       Policies:
         - S3WritePolicy:
-            BucketName: pgr301-couch-explorers
+            BucketName: pgr301--couch-explorers
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
