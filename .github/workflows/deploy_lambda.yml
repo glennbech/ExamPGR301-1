@@ -3,8 +3,7 @@ name: Deploy SAM Application
 on:
   push:
     branches:
-      
-main
+      - main
 
 jobs:
   build_and_deploy:
@@ -12,43 +11,38 @@ jobs:
 
     steps:
       # Sjekk ut koden fra repositoryet
-      
-name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       # Sett opp Python 3.13 for SAM CLI
-      
-name: Set up Python 3.13
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.13
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.13
 
       # Installer SAM CLI og nødvendige avhengigheter
-      
-name: Install SAM CLI and dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y python3-pip python3-dev build-essential
-        pip3 install aws-sam-cli
+      - name: Install SAM CLI and dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-dev build-essential
+          pip3 install aws-sam-cli
 
       # Konfigurer AWS CLI med credentials fra GitHub Secrets
-      
-name: Set up AWS CLI
-      run: |
-        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws configure set region eu-west-1
-    # Debugging - Sjekk arbeidskatalogen for å bekrefte stien
-name: Check working directory
-    run: pwd
+      - name: Set up AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region eu-west-1
+          
+      # Debugging - Sjekk arbeidskatalogen for å bekrefte stien
+      - name: Check working directory
+        run: pwd
 
       # Bygg SAM-applikasjonen (bruk riktig sti til template.yaml)
-      
-name: Build SAM application
-      run: sam build -t sam_lambda/template.yaml  # Absolutt sti fra rot
+      - name: Build SAM application
+        run: sam build -t  sam_lambda/template.yaml  # Absolutt sti fra rot
 
       # Deploy SAM-applikasjonen
-      
-name: Deploy SAM application
-      run: |
-        sam deploy -t sam_lambda/template.yaml --no-confirm-changeset --stack-name main-exam-lambda --capabilities CAPABILITY_IAM
+      - name: Deploy SAM application
+        run: |
+          sam deploy -t  sam_lambda/template.yaml --no-confirm-changeset --stack-name main-exam-lambda --capabilities CAPABILITY_IAM
