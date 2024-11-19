@@ -1,40 +1,28 @@
-import json
+import base64
 import boto3
+import json
 import os
 import random
-import base64
-import traceback
 
-# Hent miljøvariabler
-BEDROCK_REGION = os.environ.get("BEDROCK_REGION", "us-east-1")
-S3_REGION = os.environ.get("S3_REGION", "eu-west-1")
-MODEL_ID = os.environ.get("MODEL_ID", "amazon.titan-image-generator-v1")
-BUCKET_NAME = os.environ.get("BUCKET_NAME")
-CANDIDATE_NUMBER = os.environ.get("CANDIDATE_NUMBER")
+# Set up the AWS clients
+bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
+s3_client = boto3.client("s3")
 
-# Valider miljøvariabler
-if not BUCKET_NAME or not CANDIDATE_NUMBER:
-    raise ValueError("Missing required environment variables: BUCKET_NAME or CANDIDATE_NUMBER")
-
-# AWS-klienter
-bedrock_client = boto3.client("bedrock-runtime", region_name=BEDROCK_REGION)
-s3_client = boto3.client("s3", region_name=S3_REGION)
-
+# Lambda handler
 def lambda_handler(event, context):
     try:
-        # Parse prompt fra HTTP body
-        body = json.loads(event["body"])
-        prompt = body.get("prompt", "").strip()
+        # Get the bucket name from environment variables
+        bucket_name = os.environ["BUCKET_NAME"]
 
-        # Valider prompt
-        if not prompt or not isinstance(prompt, str):
-            raise ValueError("Invalid input: 'prompt' must be a non-empty string")
-        
-        # Generer unik filsti basert på kandidatnummer og seed
+        # Parse input prompt from event body
+        body = json.loads(event["body"])
+        prompt = body["prompt"]
+
+        # Generate a random seed for the image
         seed = random.randint(0, 2147483647)
-        s3_image_path = f"{CANDIDATE_NUMBER}/generated_image_{seed}.png"
-        
-        # Konfigurer forespørsel til Bedrock
+        s3_image_path = f"{os.environ['CANDIDATE_NUMBER']}/generated_images/titan_{seed}.png"
+
+        # Prepare the request to AWS Bedrock
         native_request = {
             "taskType": "TEXT_IMAGE",
             "textToImageParams": {"text": prompt},
@@ -47,41 +35,26 @@ def lambda_handler(event, context):
                 "seed": seed,
             },
         }
-        
-        # Kall Bedrock-modellen
-        response = bedrock_client.invoke_model(
-            modelId=MODEL_ID,
-            body=json.dumps(native_request),
-            contentType="application/json"
-        )
-        
-        # Dekode bildet fra Bedrock-svaret
-        response_body = json.loads(response["body"].read().decode("utf-8"))
-        if "image" not in response_body or "b64" not in response_body["image"]:
-            raise KeyError("Bedrock response does not contain expected image data")
 
-        image_data = base64.b64decode(response_body["image"]["b64"])
-        
-        # Last opp bildet til S3
-        s3_client.put_object(
-            Bucket=BUCKET_NAME,
-            Key=s3_image_path,
-            Body=image_data,
-            ContentType="image/png"
-        )
-        
-        # Returner suksessrespons
+        # Call Bedrock to generate the image
+        response = bedrock_client.invoke_model(modelId="amazon.titan-image-generator-v1", body=json.dumps(native_request))
+        model_response = json.loads(response["body"].read())
+
+        # Extract and decode the Base64 image data
+        base64_image_data = model_response["images"][0]
+        image_data = base64.b64decode(base64_image_data)
+
+        # Upload the decoded image data to S3
+        s3_client.put_object(Bucket=bucket_name, Key=s3_image_path, Body=image_data)
+
+        # Return the S3 URI of the uploaded image
         return {
             "statusCode": 200,
-            "body": json.dumps({
-                "message": "Image generated successfully",
-                "s3_path": f"s3://{BUCKET_NAME}/{s3_image_path}"
-            })
+            "body": json.dumps({"message": "Image generated", "s3_uri": f"s3://{bucket_name}/{s3_image_path}"}),
         }
+
     except Exception as e:
-        print(f"Error: {str(e)}")
-        print(traceback.format_exc())
         return {
             "statusCode": 500,
-            "body": json.dumps({"error": str(e)})
+            "body": json.dumps({"error": str(e)}),
         }
