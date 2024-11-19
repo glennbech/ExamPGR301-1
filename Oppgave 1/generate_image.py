@@ -8,9 +8,6 @@ import base64
 bedrock_client = boto3.client("bedrock-runtime", region_name="eu-west-1")
 s3_client = boto3.client("s3")
 
-# Miljøvariabler (dynamisk bucket-navn og kandidatnummer)
-BUCKET_NAME = os.environ.get("BUCKET_NAME", "default-bucket")
-CANDIDATE_NUMBER = os.environ.get("CANDIDATE_NUMBER", "default_candidate")
 
 def lambda_handler(event, context):
     try:
