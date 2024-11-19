@@ -10,7 +10,7 @@ s3_client = boto3.client("s3")
 
 # Define the model ID and S3 bucket name (replace with your actual bucket name)
 model_id = "amazon.titan-image-generator-v1"
-bucket_name = "pgr301-couch--explorers"
+bucket_name = "pgr301--couch-explorers"
 
 def lambda_handler(event, context):
     body = json.loads(event['body'])
