@@ -52,4 +52,4 @@ jobs:
 
     # Deploy SAM-applikasjonen
     - name: Deploy SAM Application
-      run: sam deploy -t sam_lambda/template.yaml --no-confirm-changeset --stack-name sam-lambda-stack --capabilities CAPABILITY_IAM
+      run: sam deploy -t sam_lambda/template.yaml --no-confirm-changeset --stack-name sam-lambda-stack --capabilities CAPABILITY_IAM --s3-bucket pgr301-couch-explorers-candidate69
