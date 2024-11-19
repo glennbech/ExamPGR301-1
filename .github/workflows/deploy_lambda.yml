@@ -33,7 +33,7 @@ jobs:
 
     # Bygger SAM-applikasjonen
     - name: Build SAM Application
-      run: sam build
+      run: sam build -t sam_lambda/template.yaml
 
     # Deployerer SAM-applikasjonen
     - name: Deploy SAM Application
