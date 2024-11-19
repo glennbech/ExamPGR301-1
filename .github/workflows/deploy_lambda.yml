@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build_and_deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -41,12 +41,12 @@ jobs:
       run: sam build -t sam_lambda/template.yaml
 
     # Deployerer SAM-applikasjonen
-     - name: Deploy SAM Application
+    - name: Deploy SAM Application
       run: |
         sam deploy \
-          --template-file .aws-sam/build/template.yaml \
+          -t sam_lambda/template.yaml \
           --stack-name my-sam-app \
-          --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
+          --capabilities CAPABILITY_IAM \
           --region eu-west-1 \
           --no-confirm-changeset \
-          --parameter-overrides Environment=prodd
+          --parameter-overrides Environment=prod
