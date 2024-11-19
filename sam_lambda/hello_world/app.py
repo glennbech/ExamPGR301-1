@@ -4,10 +4,16 @@ import os
 import random
 import base64
 
-# AWS-klienter
-bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
-s3_client = boto3.client("s3", region_name="eu-west-1")
+# Hent miljøvariabler
+BEDROCK_REGION = os.environ.get("BEDROCK_REGION", "us-east-1")
+S3_REGION = os.environ.get("S3_REGION", "eu-west-1")
+MODEL_ID = os.environ.get("MODEL_ID", "amazon.titan-image-generator-v1")
+BUCKET_NAME = os.environ.get("BUCKET_NAME")
+CANDIDATE_NUMBER = os.environ.get("CANDIDATE_NUMBER")
 
+# AWS-klienter
+bedrock_client = boto3.client("bedrock-runtime", region_name=BEDROCK_REGION)
+s3_client = boto3.client("s3", region_name=S3_REGION)
 
 def lambda_handler(event, context):
     try:
@@ -32,9 +38,10 @@ def lambda_handler(event, context):
                 "seed": seed,
             },
         }
+        
         # Kall Bedrock-modellen
         response = bedrock_client.invoke_model(
-            modelId="amazon.titan-image-generator-v1",
+            modelId=MODEL_ID,
             body=json.dumps(native_request),
             contentType="application/json"
         )

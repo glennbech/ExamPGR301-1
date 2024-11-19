@@ -8,11 +8,16 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: app.lambda_handler
-      Runtime: python3.13
+      Runtime: python3.9
       CodeUri: .
       Environment:
         Variables:
-          CANDIDATE_NUMBER: "<69>"
+          BUCKET_NAME: "pgr301-couch--explorers"
+          CANDIDATE_NUMBER: "69"
+          BEDROCK_REGION: "us-east-1"
+          S3_REGION: "eu-west-1"
+          MODEL_ID: "amazon.titan-image-generator-v1"
+      Timeout: 30  
       Events:
         ApiEvent:
           Type: Api
@@ -21,7 +26,7 @@ Resources:
             Method: post
       Policies:
         - S3WritePolicy:
-            BucketName: pgr301-couch--explorers
+            BucketName: "pgr301-couch--explorers"
 
 Outputs:
   GenerateImageFunction:
