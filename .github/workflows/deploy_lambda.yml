@@ -39,7 +39,7 @@ jobs:
     - name: Deploy SAM Application
       run: |
         sam deploy \
-          --template-file sam_lambda/template.yaml \
+          -t sam_lambda/template.yaml \
           --stack-name my-sam-app \
           --capabilities CAPABILITY_IAM \
           --region us-east-1 \
