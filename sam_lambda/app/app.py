@@ -3,6 +3,7 @@ import boto3
 import os
 import random
 import base64
+import traceback
 
 # Hent miljøvariabler
 BEDROCK_REGION = os.environ.get("BEDROCK_REGION", "us-east-1")
@@ -10,6 +11,10 @@ S3_REGION = os.environ.get("S3_REGION", "eu-west-1")
 MODEL_ID = os.environ.get("MODEL_ID", "amazon.titan-image-generator-v1")
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
 CANDIDATE_NUMBER = os.environ.get("CANDIDATE_NUMBER")
+
+# Valider miljøvariabler
+if not BUCKET_NAME or not CANDIDATE_NUMBER:
+    raise ValueError("Missing required environment variables: BUCKET_NAME or CANDIDATE_NUMBER")
 
 # AWS-klienter
 bedrock_client = boto3.client("bedrock-runtime", region_name=BEDROCK_REGION)
@@ -19,7 +24,11 @@ def lambda_handler(event, context):
     try:
         # Parse prompt fra HTTP body
         body = json.loads(event["body"])
-        prompt = body.get("prompt", "Default prompt")
+        prompt = body.get("prompt", "").strip()
+
+        # Valider prompt
+        if not prompt or not isinstance(prompt, str):
+            raise ValueError("Invalid input: 'prompt' must be a non-empty string")
         
         # Generer unik filsti basert på kandidatnummer og seed
         seed = random.randint(0, 2147483647)
@@ -47,7 +56,10 @@ def lambda_handler(event, context):
         )
         
         # Dekode bildet fra Bedrock-svaret
-        response_body = json.loads(response["body"])
+        response_body = json.loads(response["body"].read().decode("utf-8"))
+        if "image" not in response_body or "b64" not in response_body["image"]:
+            raise KeyError("Bedrock response does not contain expected image data")
+
         image_data = base64.b64decode(response_body["image"]["b64"])
         
         # Last opp bildet til S3
@@ -67,6 +79,8 @@ def lambda_handler(event, context):
             })
         }
     except Exception as e:
+        print(f"Error: {str(e)}")
+        print(traceback.format_exc())
         return {
             "statusCode": 500,
             "body": json.dumps({"error": str(e)})
