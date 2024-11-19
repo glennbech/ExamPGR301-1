@@ -14,20 +14,25 @@ Globals:
     LoggingConfig:
       LogFormat: JSON
 Resources:
-  HelloWorldFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  GenerateImageFunction:
+    Type: AWS::Serverless::Function
     Properties:
-      CodeUri: hello_world/
       Handler: app.lambda_handler
-      Runtime: python3.13
-      Architectures:
-      - x86_64
+      Runtime: python3.9
+      CodeUri: .
+      Environment:
+        Variables:
+          BUCKET_NAME: "pgr301--couch-explorers"
+          CANDIDATE_NUMBER: "<ditt_kandidatnummer>"
       Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+        ApiEvent:
+          Type: Api
           Properties:
-            Path: /hello
-            Method: get
+            Path: /generate
+            Method: post
+      Policies:
+        - S3WritePolicy:
+            BucketName: pgr301--couch-explorers
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
