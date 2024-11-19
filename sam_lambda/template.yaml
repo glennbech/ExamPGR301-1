@@ -1,7 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Transform: AWS::Serverless-2016-10-31
-Description: >
-  SAM Template for Generate Image Function
+Transform: 'AWS::Serverless-2016-10-31'
 
 Resources:
   GenerateImageFunction:
@@ -9,29 +7,26 @@ Resources:
     Properties:
       Handler: app.lambda_handler
       Runtime: python3.13
-      CodeUri: .
+      CodeUri: app
+      Timeout: 30
+      MemorySize: 128
       Environment:
         Variables:
-          BUCKET_NAME: "pgr301-couch--explorers"
-          CANDIDATE_NUMBER: "69"
-          BEDROCK_REGION: "us-east-1"
-          S3_REGION: "eu-west-1"
-          MODEL_ID: "amazon.titan-image-generator-v1"
-      Timeout: 30  
+          S3_BUCKET_NAME: !Ref S3BucketName  # Dynamisk bucket-navn fra parameteren
       Events:
-        ApiEvent:
+        GenerateImageAPI:
           Type: Api
           Properties:
-            Path: /generate
+            Path: /generate-image
             Method: post
-      Policies:
-        - S3WritePolicy:
-            BucketName: "pgr301-couch--explorers"
 
-Outputs:
-  GenerateImageFunction:
-    Description: "Lambda Function ARN"
-    Value: !GetAtt GenerateImageFunction.Arn
-  GenerateImageFunctionApi:
-    Description: "API Gateway endpoint URL for Prod stage"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/generate"
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref S3BucketName  # Bruker samme parameter for S3-bucketnavn
+
+Parameters:
+  S3BucketName:
+    Type: String
+    Default: pgr301-couch--explorers  # Sett et standardverdi for S3-bucketnavnet
+    Description: "S3 bucket name for storing generated images"
