@@ -12,7 +12,7 @@ Resources:
       MemorySize: 128
       Environment:
         Variables:
-          S3_BUCKET_NAME: !Ref S3BucketName  # Dynamisk bucket-navn fra parameteren
+          BUCKET_NAME: !Ref S3BucketName  # Dynamisk bucket-navn fra parameteren
           CANDIDATE_NUMBER: "69"
       Events:
         GenerateImageAPI:
