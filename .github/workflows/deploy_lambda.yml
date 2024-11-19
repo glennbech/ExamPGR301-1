@@ -49,7 +49,7 @@ jobs:
 
     # Bygg SAM-applikasjonen
     - name: Build SAM Application
-      run: sam build --template-file path/to/template.yml
+      run: sam build --template-file /workspaces/ExamPGR301/sam_lambda/template.yml
 
     # Deploy SAM-applikasjonen
     - name: Deploy SAM Application
