@@ -1,8 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  SAM Template for Generate Image 
-  
+  SAM Template for Generate Image Function
+
 Resources:
   GenerateImageFunction:
     Type: AWS::Serverless::Function
@@ -13,18 +13,25 @@ Resources:
       Environment:
         Variables:
           BUCKET_NAME: "pgr301-couch--explorers"
-          CANDIDATE_NUMBER: "12345"
+          CANDIDATE_NUMBER: "69"
           BEDROCK_REGION: "us-east-1"
           S3_REGION: "eu-west-1"
           MODEL_ID: "amazon.titan-image-generator-v1"
-      Timeout: 30
+      Timeout: 30  
       Events:
-        GeneratePostEvent:
+        ApiEvent:
           Type: Api
           Properties:
             Path: /generate
             Method: post
-            Cors: true
-Policies:
-  - S3WritePolicy:
-      BucketName: pgr301-couch--explorers
+      Policies:
+        - S3WritePolicy:
+            BucketName: "pgr301-couch--explorers"
+
+Outputs:
+  GenerateImageFunction:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt GenerateImageFunction.Arn
+  GenerateImageFunctionApi:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/generate"
