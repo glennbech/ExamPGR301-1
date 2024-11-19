@@ -5,8 +5,8 @@ import random
 import base64
 
 # AWS-klienter
-bedrock_client = boto3.client("bedrock-runtime", region_name="eu-west-1")
-s3_client = boto3.client("s3")
+bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
+s3_client = boto3.client("s3", region_name="eu-west-1")
 
 
 def lambda_handler(event, context):
