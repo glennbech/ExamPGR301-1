@@ -29,5 +29,5 @@ Resources:
 Parameters:
   S3BucketName:
     Type: String
-    Default: pgr301--couch-explorers  # Sett et standardverdi for S3-bucketnavnet
+    Default: pgr301-couch-explorers-candidate69  # Sett et standardverdi for S3-bucketnavnet
     Description: "S3 bucket name for storing generated images"
