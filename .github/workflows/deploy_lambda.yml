@@ -24,10 +24,12 @@ jobs:
     # Installer SAM CLI
     - name: Install AWS SAM CLI
       run: |
-        sudo apt-get update && sudo apt-get install -y unzip
-        curl -Lo sam-installation.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
-        unzip sam-installation.zip -d sam-installation
-        sudo ./sam-installation/install
+        if ! command -v sam &> /dev/null; then
+          sudo apt-get update && sudo apt-get install -y unzip
+          curl -Lo sam-installation.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
+          unzip sam-installation.zip -d sam-installation
+          sudo ./sam-installation/install
+        fi
         sam --version
 
     # Installer avhengigheter
