@@ -23,12 +23,12 @@ jobs:
         aws-region: eu-west-1 # Endre til din region
 
     # Installerer AWS SAM CLI
-    - name: Install AWS SAM CLI
+    - name: Install or Update AWS SAM CLI
       run: |
         sudo apt-get update && sudo apt-get install -y unzip
         curl -Lo sam-installation.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
         unzip sam-installation.zip -d sam-installation
-        sudo ./sam-installation/install
+        sudo ./sam-installation/install --update
         sam --version
 
     # Bygger SAM-applikasjonen
