@@ -3,7 +3,8 @@ name: Deploy SAM Application
 on:
   push:
     branches:
-      - main
+      
+main
 
 jobs:
   deploy:
@@ -11,36 +12,53 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    # Sjekk ut repository
+    
+name: Checkout code
+    uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: 3.9
+    # Sett opp Python
+    
+name: Set up Python
+    uses: actions/setup-python@v3
+    with:
+      python-version: 3.13
 
-    - name: Install AWS SAM CLI
-      run: |
+    # Installer SAM CLI
+    
+name: Install AWS SAM CLI
+    run: |
+      if ! command -v sam &> /dev/null; then
         sudo apt-get update && sudo apt-get install -y unzip
         curl -Lo sam-installation.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
         unzip sam-installation.zip -d sam-installation
         sudo ./sam-installation/install
-        sam --version
+      fi
+      sam --version
 
-    - name: Delete existing stack if in ROLLBACK_COMPLETE
-      run: |
-        STACK_STATUS=$(aws cloudformation describe-stacks --stack-name sam-lambda-stack --query "Stacks[0].StackStatus" --output text || echo "NOT_FOUND")
-        if [ "$STACK_STATUS" = "ROLLBACK_COMPLETE" ]; then
-          echo "Stack in ROLLBACK_COMPLETE state. Deleting..."
-          aws cloudformation delete-stack --stack-name sam-lambda-stack
-          echo "Waiting for stack deletion to complete..."
-          aws cloudformation wait stack-delete-complete --stack-name sam-lambda-stack
-        else
-          echo "Stack is not in ROLLBACK_COMPLETE state. Proceeding..."
-        fi
+    # Installer avhengigheter
+    
+name: Install dependencies
+    run: |
+      python3 -m venv .venv
+      source .venv/bin/activate
 
-    - name: Build SAM Application
-      run: sam build --template-file sam_lambda/template.yaml
+    # Konfigurer AWS legitimasjon
+    
+name: Configure AWS credentials
+    uses: aws-actions/configure-aws-credentials@v3
+    with:
+      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      aws-region: eu-west-1
 
-    - name: Deploy SAM Application
-      run: sam deploy --no-confirm-changeset --stack-name sam-lambda-stack --capabilities CAPABILITY_IAM --s3-bucket pgr301-couch-explorers-candidate69
+    # Bygg SAM-applikasjonen
+    
+name: Build SAM Application
+    run: sam build -t sam_lambda/template.yaml
+
+    # Deploy SAM-applikasjonen
+    
+name: Deploy SAM Application
+    run: |
+     sam deploy -t sam_lambda/template.yaml --no-confirm-changeset --stack-name sam-lambda-stack --capabilities CAPABILITY_IAM --s3-bucket pgr301-couch-explorers-candidate69
