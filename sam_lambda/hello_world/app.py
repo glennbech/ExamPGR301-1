@@ -1,42 +1,66 @@
 import json
+import boto3
+import os
+import random
+import base64
 
-# import requests
+# AWS-klienter
+bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
+s3_client = boto3.client("s3", region_name="eu-west-1")
 
 
 def lambda_handler(event, context):
-    """Sample pure Lambda function
-
-    Parameters
-    ----------
-    event: dict, required
-        API Gateway Lambda Proxy Input Format
-
-        Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
-
-    context: object, required
-        Lambda Context runtime methods and attributes
-
-        Context doc: https://docs.aws.amazon.com/lambda/latest/dg/python-context-object.html
-
-    Returns
-    ------
-    API Gateway Lambda Proxy Output Format: dict
-
-        Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
-    """
-
-    # try:
-    #     ip = requests.get("http://checkip.amazonaws.com/")
-    # except requests.RequestException as e:
-    #     # Send some context about this error to Lambda Logs
-    #     print(e)
-
-    #     raise e
-
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
-            "message": "hello world",
-            # "location": ip.text.replace("\n", "")
-        }),
-    }
+    try:
+        # Parse prompt fra HTTP body
+        body = json.loads(event["body"])
+        prompt = body.get("prompt", "Default prompt")
+        
+        # Generer unik filsti basert på kandidatnummer og seed
+        seed = random.randint(0, 2147483647)
+        s3_image_path = f"{CANDIDATE_NUMBER}/generated_image_{seed}.png"
+        
+        # Konfigurer forespørsel til Bedrock
+        native_request = {
+            "taskType": "TEXT_IMAGE",
+            "textToImageParams": {"text": prompt},
+            "imageGenerationConfig": {
+                "numberOfImages": 1,
+                "quality": "standard",
+                "cfgScale": 8.0,
+                "height": 1024,
+                "width": 1024,
+                "seed": seed,
+            },
+        }
+        # Kall Bedrock-modellen
+        response = bedrock_client.invoke_model(
+            modelId="amazon.titan-image-generator-v1",
+            body=json.dumps(native_request),
+            contentType="application/json"
+        )
+        
+        # Dekode bildet fra Bedrock-svaret
+        response_body = json.loads(response["body"])
+        image_data = base64.b64decode(response_body["image"]["b64"])
+        
+        # Last opp bildet til S3
+        s3_client.put_object(
+            Bucket=BUCKET_NAME,
+            Key=s3_image_path,
+            Body=image_data,
+            ContentType="image/png"
+        )
+        
+        # Returner suksessrespons
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "message": "Image generated successfully",
+                "s3_path": f"s3://{BUCKET_NAME}/{s3_image_path}"
+            })
+        }
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": str(e)})
+        }
