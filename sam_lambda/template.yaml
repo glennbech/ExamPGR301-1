@@ -22,7 +22,8 @@ Resources:
       CodeUri: .
       Environment:
         Variables:
-          CANDIDATE_NUMBER: "<Ditt kandidatnummer>"
+          BUCKET_NAME: "pgr301--couch-explorers"
+          CANDIDATE_NUMBER: "<ditt_kandidatnummer>"
       Events:
         ApiEvent:
           Type: Api
