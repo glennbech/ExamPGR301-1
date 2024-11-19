@@ -7,49 +7,41 @@ on:
 
 jobs:
   deploy:
-    name: Deploy SAM Application to AWS
     runs-on: ubuntu-latest
 
     steps:
-    # Sjekk ut repository
-    - name: Checkout code
+    # Sjekker ut koden fra repository
+    - name: Checkout Code
       uses: actions/checkout@v3
 
-    # Sett opp Python
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: 3.13
-
-    # Installer SAM CLI
-    - name: Install AWS SAM CLI
-      run: |
-        if ! command -v sam &> /dev/null; then
-          sudo apt-get update && sudo apt-get install -y unzip
-          curl -Lo sam-installation.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
-          unzip sam-installation.zip -d sam-installation
-          sudo ./sam-installation/install
-        fi
-        sam --version
-
-    # Installer avhengigheter
-    - name: Install dependencies
-      run: |
-        python3 -m venv .venv
-        source .venv/bin/activate
-
-    # Konfigurer AWS legitimasjon
-    - name: Configure AWS credentials
+    # Setter opp AWS CLI og SAM CLI
+    - name: Setup AWS CLI
       uses: aws-actions/configure-aws-credentials@v3
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-west-1
+        aws-region: eu-west-1 # Endre til din region
 
-    # Bygg SAM-applikasjonen
+    # Installerer AWS SAM CLI
+    - name: Install AWS SAM CLI
+      run: |
+        sudo apt-get update && sudo apt-get install -y unzip
+        curl -Lo sam-installation.zip https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
+        unzip sam-installation.zip -d sam-installation
+        sudo ./sam-installation/install
+        sam --version
+
+    # Bygger SAM-applikasjonen
     - name: Build SAM Application
-      run: sam build -t sam_lambda/template.yaml
+      run: sam build
 
-    # Deploy SAM-applikasjonen
+    # Deployerer SAM-applikasjonen
     - name: Deploy SAM Application
-      run: sam deploy -t sam_lambda/template.yaml --no-confirm-changeset --stack-name sam-lambda-stack --capabilities CAPABILITY_IAM --s3-bucket pgr301-couch-explorers-candidate69
+      run: |
+        sam deploy \
+          --template-file .aws-sam/build/template.yaml \
+          --stack-name my-sam-app \
+          --capabilities CAPABILITY_IAM \
+          --region us-east-1 \
+          --no-confirm-changeset \
+          --parameter-overrides Environment=prod
