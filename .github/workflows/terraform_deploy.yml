@@ -1,0 +1,53 @@
+name: Terraform Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - '**'
+
+jobs:
+  terraform:
+    name: Terraform Workflow
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Sjekk ut koden
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # 2. Sett opp AWS-legitimasjonene fra GitHub Secrets
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
+
+    # 3. Sett opp Terraform
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.7 # Oppdater om nødvendig
+
+    # 4. Initialiser Terraform
+    - name: Terraform Init
+      run: terraform init
+
+    # 5. Velg handling basert på branch
+    - name: Terraform Plan/Apply
+      id: terraform
+      run: |
+        if [[ $GITHUB_REF == refs/heads/main ]]; then
+          terraform apply -auto-approve
+        else
+          terraform plan
+        fi
+
+    # 6. (Valgfritt) Last opp Terraform-planen for testing
+    - name: Upload Terraform Plan
+      if: github.ref != 'refs/heads/main'
+      uses: actions/upload-artifact@v3
+      with:
+        name: terraform-plan
+        path: plan.out
