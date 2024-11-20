@@ -7,7 +7,7 @@ terraform {
     }
   }
   backend "s3" {
-    bucket         = "pgr301-2024-terraform-state"
+    bucket         = "pgr301-2024-terraform-state-candidate69"
     key            = "lambda-sqs/terraform.tfstate"
     region         = "eu-west-1"
     encrypt        = true
