@@ -9,13 +9,13 @@ terraform {
   backend "s3" {
     bucket         = "pgr301-2024-terraform-state"
     key            = "lambda-sqs/terraform.tfstate"
-    region         = "us-east-1"
+    region         = "eu-west-1"
     encrypt        = true
   }
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = "eu-west-1"
 }
 
 resource "aws_sqs_queue" "image_processing_queue" {
@@ -57,7 +57,7 @@ resource "aws_iam_policy" "lambda_policy" {
           "s3:PutObject"
         ]
         Effect   = "Allow"
-        Resource = "arn:aws:s3:::pgr301-couch-explorers/*"
+        Resource = "arn:aws:s3:::pgr301-couch-explorers-candidate69/*"
       },
       {
         Action = "logs:*"
@@ -82,7 +82,7 @@ resource "aws_lambda_function" "image_processor" {
   timeout          = 30
   environment {
     variables = {
-      BUCKET_NAME = "pgr301-couch-explorers"
+      BUCKET_NAME = "pgr301-couch-explorers-candidate69"
     }
   }
   source_code_hash = filebase64sha256("${path.module}/lambda/lambda_sqs.py")
