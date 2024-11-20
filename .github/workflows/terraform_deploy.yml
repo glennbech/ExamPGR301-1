@@ -31,7 +31,7 @@ jobs:
         terraform_version: 1.9.0
 
     # 4. Naviger til riktig katalog
-    - name: Change Directory to Infra
+    - name: Terraform Init
       working-directory: infra
       run: terraform init
  
