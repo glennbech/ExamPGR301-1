@@ -30,12 +30,14 @@ jobs:
       with:
         terraform_version: 1.5.7
 
-    # 4. Initialiser Terraform
-    - name: Terraform Init
+    # 4. Naviger til riktig katalog
+    - name: Change Directory to Infra
+      working-directory: infra
       run: terraform init
 
     # 5. Kjør Terraform Plan eller Apply
     - name: Terraform Plan/Apply
+      working-directory: infra
       run: |
         if [[ $GITHUB_REF == refs/heads/main ]]; then
           terraform apply -auto-approve
