@@ -78,14 +78,14 @@ resource "aws_lambda_function" "image_processor" {
   role             = aws_iam_role.lambda_execution_role.arn
   runtime          = "python3.9"
   handler          = "lambda_sqs.lambda_handler"
-  filename         = "${path.module}/lambda/lambda_sqs.py"
+  filename         = "${path.module}/lambda/lambda_sqs.zip"
   timeout          = 30
   environment {
     variables = {
       BUCKET_NAME = "pgr301-couch-explorers-candidate69"
     }
   }
-  source_code_hash = filebase64sha256("${path.module}/lambda/lambda_sqs.py")
+  source_code_hash = filebase64sha256("${path.module}/lambda/lambda_sqs.zip")
 }
 
 resource "aws_lambda_event_source_mapping" "sqs_lambda_mapping" {
