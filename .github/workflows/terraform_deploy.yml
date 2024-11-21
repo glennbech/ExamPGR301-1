@@ -12,11 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Sjekk ut koden
+    # 1. Sjekk ut repositoryet
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # 2. Sett opp AWS-legitimasjonene fra GitHub Secrets
+    # 2. Sett opp AWS-legitimasjoner
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
@@ -28,26 +28,19 @@ jobs:
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v2
       with:
-        terraform_version: 1.5.7 # Oppdater om nødvendig
+        terraform_version: 1.9.0
 
-    # 4. Initialiser Terraform
+    # 4. Naviger til riktig katalog
     - name: Terraform Init
+      working-directory: infra
       run: terraform init
-
-    # 5. Velg handling basert på branch
+ 
+    # 5. Kjør Terraform Plan eller Apply
     - name: Terraform Plan/Apply
-      id: terraform
+      working-directory: infra
       run: |
         if [[ $GITHUB_REF == refs/heads/main ]]; then
           terraform apply -auto-approve
         else
           terraform plan
         fi
-
-    # 6. (Valgfritt) Last opp Terraform-planen for testing
-    - name: Upload Terraform Plan
-      if: github.ref != 'refs/heads/main'
-      uses: actions/upload-artifact@v3
-      with:
-        name: terraform-plan
-        path: plan.out
