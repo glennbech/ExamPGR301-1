@@ -7,4 +7,3 @@ variable "alarm_email" {
   type = string
 }
 
-alarm_email = "jorgenandre21@gmail.com"
