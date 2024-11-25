@@ -12,7 +12,7 @@ Resources:
       MemorySize: 128
       Environment:
         Variables:
-          BUCKET_NAME: !Ref S3BucketName  
+          BUCKET_NAME: pgr301-couch-explorers-candidate69 
           CANDIDATE_NUMBER: "69"
       Events:
         GenerateImageAPI:
@@ -25,7 +25,7 @@ S3Bucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
     Properties:
-      BucketName: !Ref S3BucketName
+      BucketName: pgr301-couch-explorers-candidate69
 
 Parameters:
   S3BucketName:
