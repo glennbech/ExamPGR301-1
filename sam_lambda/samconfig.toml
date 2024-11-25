@@ -4,7 +4,6 @@ version = 0.1
 
 [default.global.parameters]
 stack_name = "generate-image-lambda"
-region = "eu-west-1"
 
 [default.build.parameters]
 cached = true
@@ -16,11 +15,10 @@ lint = true
 [default.deploy.parameters]
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
-resolve_s3 = false
-s3_bucket = "pgr301-couch-explorers-candidate69"
+resolve_s3 = true
 
 [default.package.parameters]
-resolve_s3 = false
+resolve_s3 = true
 
 [default.sync.parameters]
 watch = true

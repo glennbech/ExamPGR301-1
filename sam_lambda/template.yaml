@@ -12,7 +12,7 @@ Resources:
       MemorySize: 128
       Environment:
         Variables:
-          BUCKET_NAME: pgr301-couch-explorers-candidate69 
+          BUCKET_NAME: !Ref S3BucketName
           CANDIDATE_NUMBER: "69"
       Events:
         GenerateImageAPI:
@@ -21,14 +21,13 @@ Resources:
             Path: /generate-image
             Method: post
 
-S3Bucket:
+  S3Bucket:
     Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
     Properties:
-      BucketName: pgr301-couch-explorers-candidate69
+      BucketName: !Ref S3BucketName
 
 Parameters:
   S3BucketName:
     Type: String
-    Default: pgr301-couch-explorers-candidate69 
+    Default: pgr301-couch-explorers-candidate69  
     Description: "S3 bucket name for storing generated images"

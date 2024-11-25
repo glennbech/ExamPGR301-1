@@ -4,14 +4,11 @@ import json
 import os
 import random
 
-# Set up the AWS clients
 bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
 s3_client = boto3.client("s3")
 
-# Lambda handler
 def lambda_handler(event, context):
     try:
-
         bucket_name = os.environ["BUCKET_NAME"]
 
         body = json.loads(event["body"])
