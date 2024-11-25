@@ -29,5 +29,5 @@ Resources:
 Parameters:
   S3BucketName:
     Type: String
-    Default: pgr301-couch-explorers-candidate69  
+    Default: pgr301-couch-explorers-kandidat69
     Description: "S3 bucket name for storing generated images"
