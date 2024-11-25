@@ -80,6 +80,7 @@ resource "aws_lambda_function" "image_processor" {
   handler          = "lambda_sqs.lambda_handler"
   filename         = "${path.module}/lambda/lambda_sqs.zip"
   timeout          = 30
+  reserved_concurrent_executions = 5
   environment {
     variables = {
       BUCKET_NAME = "pgr301-couch-explorers-candidate69"
