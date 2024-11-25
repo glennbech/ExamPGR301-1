@@ -80,7 +80,6 @@ resource "aws_lambda_function" "image_processor" {
   handler          = "lambda_sqs.lambda_handler"
   filename         = "${path.module}/lambda/lambda_sqs.zip"
   timeout          = 30
-  reserved_concurrent_executions = 5
   environment {
     variables = {
       BUCKET_NAME = "pgr301-couch-explorers-candidate69"
@@ -117,7 +116,7 @@ resource "aws_cloudwatch_metric_alarm" "sqs_age_of_oldest_message_alarm" {
   namespace                 = "AWS/SQS"
   period                    = 60
   statistic                 = "Maximum"
-  threshold                 = 60 # Angi grensen i sekunder for alarmen
+  threshold                 = 120 # Angi grensen i sekunder for alarmen
   alarm_description         = "Triggered when the age of the oldest message exceeds 60 seconds."
   dimensions = {
     QueueName = aws_sqs_queue.image_processing_queue.name
