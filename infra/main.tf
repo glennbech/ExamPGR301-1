@@ -95,19 +95,16 @@ resource "aws_lambda_event_source_mapping" "sqs_lambda_mapping" {
   enabled          = true
 }
 
-# Opprett en SNS Topic for å sende varsler
 resource "aws_sns_topic" "sqs_alarm_topic" {
   name = "sqs_alarm_topic"
 }
 
-# Opprett en SNS Topic Subscription for e-post
 resource "aws_sns_topic_subscription" "sqs_alarm_email_subscription" {
   topic_arn = aws_sns_topic.sqs_alarm_topic.arn
   protocol  = "email"
   endpoint  = var.alarm_email # E-postadressen angis via en variabel
 }
 
-# Opprett en CloudWatch Alarm for ApproximateAgeOfOldestMessage
 resource "aws_cloudwatch_metric_alarm" "sqs_age_of_oldest_message_alarm" {
   alarm_name                = "SQSApproximateAgeOfOldestMessageAlarm"
   comparison_operator       = "GreaterThanThreshold"

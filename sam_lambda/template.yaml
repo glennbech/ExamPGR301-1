@@ -12,7 +12,7 @@ Resources:
       MemorySize: 128
       Environment:
         Variables:
-          BUCKET_NAME: !Ref S3BucketName  # Dynamisk bucket-navn fra parameteren
+          BUCKET_NAME: !Ref S3BucketName  
           CANDIDATE_NUMBER: "69"
       Events:
         GenerateImageAPI:
@@ -24,10 +24,10 @@ Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref S3BucketName  # Bruker samme parameter for S3-bucketnavn
+      BucketName: !Ref S3BucketName  
 
 Parameters:
   S3BucketName:
     Type: String
-    Default: pgr301-couch-explorers-candidate69  # Sett et standardverdi for S3-bucketnavnet
+    Default: pgr301-couch-explorers-candidate69 
     Description: "S3 bucket name for storing generated images"
