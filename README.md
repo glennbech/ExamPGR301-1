@@ -31,6 +31,11 @@ Denne README filen inneholder alle løsningene på eksamen og linker til alle n�
 
 - SQS-URL: https://sqs.eu-west-1.amazonaws.com/443370721885/Dockerqueue  
 
+- Eksempel på kommando for å kjøre imaget: 
+```bash
+docker run -e AWS_ACCESS_KEY_ID=xxx -e AWS_SECRET_ACCESS_KEY=yyy -e SQS_QUEUE_URL=https://sqs.eu-west-1.amazonaws.com/443370721885/Dockerqueue siggyy/java-sqs-client "Me at the beach!"
+```
+
 - Taggestrategi: Min taggestrategi har vært at jeg bruker "latest" som standard tag i min workflow slik at den alltid er up-to-date med Docker. Så grunnen til at jeg gjør det er at det er en enkel taggestrategi, som i tillegg er automatisk og sikrer at jeg, "teamet" og sensor alltid har tilgang til siste versjonen uten å¨måtte endre versjonsnummer for hver gang. 
 
 ## - Oppgave 5:
