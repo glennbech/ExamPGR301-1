@@ -4,6 +4,7 @@ version = 0.1
 
 [default.global.parameters]
 stack_name = "generate-image-lambda"
+region = "eu-west-1"
 
 [default.build.parameters]
 cached = true

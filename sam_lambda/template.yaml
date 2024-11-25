@@ -21,10 +21,11 @@ Resources:
             Path: /generate-image
             Method: post
 
-  S3Bucket:
+   S3Bucket:
     Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
     Properties:
-      BucketName: !Ref S3BucketName  
+      BucketName: !Ref S3BucketName 
 
 Parameters:
   S3BucketName:
