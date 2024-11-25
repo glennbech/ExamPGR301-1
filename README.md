@@ -1,13 +1,13 @@
 # Couch Explorers: PGR301 Eksamen 
 
 ## - Oppgave 1a:
-    - HTTP Endepunkt for lambdafunksjonen: https://e0hnxz3hfh.execute-api.eu-west-1.amazonaws.com/Prod/generate-image  
+- HTTP Endepunkt for lambdafunksjonen: https://oy6ye7f3p5.execute-api.eu-west-1.amazonaws.com/Prod/generate-image
 
-    - Metode: POST 
+- Metode: POST 
 
-    - Headers: 'Content-Type: application/json' 
+- Headers: 'Content-Type: application/json' 
 
-    - Body: '{"prompt": "Skriv en promt inn her!"}' 
+- Body: '{"prompt": "Skriv en promt inn her!"}' 
 
 ## - Oppgave 1b:
     - Lenke til kjørt Github Actions workflow: https://github.com/Siggyy1/ExamPGR301/actions/runs/11923589930  
